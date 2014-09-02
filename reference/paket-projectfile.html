@@ -49,6 +49,12 @@
     <tbody>
         <tr>
           <td class="type-name">
+            <a href="paket-projectfile-projectfile.html">ProjectFile</a>
+          </td>
+          <td class="xmldoc"></td>
+        </tr>
+        <tr>
+          <td class="type-name">
             <a href="paket-projectfile-referencenode.html">ReferenceNode</a>
           </td>
           <td class="xmldoc"></td>
@@ -75,7 +81,7 @@
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/fsprojects/Paket/tree/master/src/Paket/ProjectFile.fs#L71-71" class="github-link">
+            <a href="http://github.com/fsprojects/Paket/tree/master/src/Paket/ProjectFile.fs#L78-78" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -90,11 +96,11 @@
             getProject fileName
           </code>
           <div class="tip" id="23">
-            <strong>Signature:</strong> fileName:string -&gt; XmlDocument<br />
+            <strong>Signature:</strong> fileName:string -&gt; ProjectFile<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/fsprojects/Paket/tree/master/src/Paket/ProjectFile.fs#L14-14" class="github-link">
+            <a href="http://github.com/fsprojects/Paket/tree/master/src/Paket/ProjectFile.fs#L19-19" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -105,14 +111,14 @@
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '24', 24)" onmouseover="showTip(event, '24', 24)">
-            getReferences doc
+            getReferences projectFile
           </code>
           <div class="tip" id="24">
-            <strong>Signature:</strong> doc:XmlDocument -&gt; ReferenceNode list<br />
+            <strong>Signature:</strong> projectFile:ProjectFile -&gt; ReferenceNode list<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/fsprojects/Paket/tree/master/src/Paket/ProjectFile.fs#L36-36" class="github-link">
+            <a href="http://github.com/fsprojects/Paket/tree/master/src/Paket/ProjectFile.fs#L44-44" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -130,7 +136,7 @@
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/fsprojects/Paket/tree/master/src/Paket/ProjectFile.fs#L9-9" class="github-link">
+            <a href="http://github.com/fsprojects/Paket/tree/master/src/Paket/ProjectFile.fs#L14-14" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
@@ -142,14 +148,14 @@
         <td class="member-name">
 
           <code onmouseout="hideTip(event, '26', 26)" onmouseover="showTip(event, '26', 26)">
-            updateReference (doc, referenceNode)
+            updateReference (...)
           </code>
           <div class="tip" id="26">
-            <strong>Signature:</strong> (doc:XmlDocument * referenceNode:ReferenceNode) -&gt; unit<br />
+            <strong>Signature:</strong> (projectFile:ProjectFile * referenceNode:ReferenceNode) -&gt; unit<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/fsprojects/Paket/tree/master/src/Paket/ProjectFile.fs#L52-52" class="github-link">
+            <a href="http://github.com/fsprojects/Paket/tree/master/src/Paket/ProjectFile.fs#L57-57" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>

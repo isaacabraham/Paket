@@ -2,10 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="utf-8"/>
-    <title>FAQ - Frequently Asked Questions
-</title>
+    <title>ProjectFile - Paket</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <meta name="description" content="A dependency manager for .NET"/>
+    <meta name="description" content=""/>
     <meta name="author" content="Steffen Forkmann, Alexander Gross"/>
 
     <script src="https://code.jquery.com/jquery-1.8.0.js"></script>
@@ -32,30 +31,75 @@
       <div class="row">
         <div class="span9" id="main">
           
-<h1>FAQ - Frequently Asked Questions</h1>
 
-<h2>Why can't I just use NuGet?</h2>
 
-<p><strong>Q:</strong> I don't understand why I need Paket to manage my packages. Why can't I just use NuGet?</p>
 
-<p><strong>A:</strong> NuGet doesn't separate out the concept of indirect dependencies; if you install a package into your project and that package has further dependencies then all indirect packages are included in the <code>packages.config</code> file. There is no way to tell which packages are only indirect dependencies.</p>
+<h1>ProjectFile</h1>
+<div class="xmldoc">
+</div>
+  <h3>Record Fields</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Record Field</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="member-name">
 
-<p>Even more importantly: if two packages reference conflicting versions of a package, NuGet will silently take the latest version; You have no control over this process.</p>
+          <code onmouseout="hideTip(event, '40', 40)" onmouseover="showTip(event, '40', 40)">
+            Document
+          </code>
+          <div class="tip" id="40">
+            <strong>Signature:</strong> XmlDocument<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/fsprojects/Paket/tree/master/src/Paket/ProjectFile.fs#L9-9" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
 
-<p>Paket on the other hand maintains this information on a consistent and stable basis within the <a href="lockfile.html">lockfile</a> in the solution root. This file, together with the <code>packages.fsx</code> enables you to determine exactly what's happening with your dependencies.</p>
+          <code onmouseout="hideTip(event, '41', 41)" onmouseover="showTip(event, '41', 41)">
+            Modified
+          </code>
+          <div class="tip" id="41">
+            <strong>Signature:</strong> bool<br />
+              <strong>Modifiers:</strong> mutable<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/fsprojects/Paket/tree/master/src/Paket/ProjectFile.fs#L11-11" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+      <tr>
+        <td class="member-name">
 
-<p>The <a href="paket_outdated.html">paket outdated</a> command lists packages that have new versions available.</p>
-
-<p>Future versions of Paket will also enable one to <a href="https://github.com/fsprojects/Paket/issues/9">reference files directly from git repositories</a>.</p>
-
-<h2>Resolving dependencies from NuGet is really slow</h2>
-
-<p><strong>Q:</strong> When I resolve the dependencies from NuGet.org it is really slow. Why is that?</p>
-
-<p><strong>A:</strong> Paket uses the NuGet oData API to discover package dependencies. Unfortunately this API is very slow.</p>
-
-<p>Some good news is that <a href="http://blog.nuget.org/20140711/nuget-architecture.html">the NuGet team are currently developing a faster API</a>; Paket may be able to take advantage of that.</p>
-
+          <code onmouseout="hideTip(event, '42', 42)" onmouseover="showTip(event, '42', 42)">
+            Namespaces
+          </code>
+          <div class="tip" id="42">
+            <strong>Signature:</strong> XmlNamespaceManager<br />
+                      </div>
+        </td>
+        <td class="xmldoc">
+            <a href="http://github.com/fsprojects/Paket/tree/master/src/Paket/ProjectFile.fs#L10-10" class="github-link">
+              <img src="../content/img/github.png" class="normal" />
+              <img src="../content/img/github-blue.png" class="hover" />
+            </a>
+          
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
         </div>
         <div class="span3">
