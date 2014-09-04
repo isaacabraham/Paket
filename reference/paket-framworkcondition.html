@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8"/>
-    <title>LockFile - Paket</title>
+    <title>FramworkCondition - Paket</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="description" content=""/>
     <meta name="author" content="Steffen Forkmann, Alexander Gross"/>
@@ -34,74 +34,58 @@
 
 
 
-<h1>LockFile</h1>
+<h1>FramworkCondition</h1>
 <div class="xmldoc">
-<p>Contains methods to handle lockfiles.</p>
+<p>Contains methods to analyze .NET Framework Conditions.</p>
 </div>
-
-<!-- Render nested types and modules, if there are any -->
-
-  <h3>Functions and values</h3>
+  <h3>Record Fields</h3>
   <table class="table table-bordered member-list">
     <thead>
-      <tr><td>Function or value</td><td>Description</td></tr>
+      <tr><td>Record Field</td><td>Description</td></tr>
     </thead>
     <tbody>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '16', 16)" onmouseover="showTip(event, '16', 16)">
-            Create (force, packageFile)
+          <code onmouseout="hideTip(event, '30', 30)" onmouseover="showTip(event, '30', 30)">
+            Framework
           </code>
-          <div class="tip" id="16">
-            <strong>Signature:</strong> (force:bool * packageFile:string) -&gt; PackageResolution<br />
+          <div class="tip" id="30">
+            <strong>Signature:</strong> string<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/fsprojects/Paket/tree/master/src/Paket/LockFile.fs#L56-56" class="github-link">
+            <a href="http://github.com/fsprojects/Paket/tree/master/src/Paket/ProjectFile.fs#L9-9" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Analyzes the dependencies from the packageFile.</p>
-
+          
         </td>
       </tr>
+    </tbody>
+  </table>
+  <h3>Static members</h3>
+  <table class="table table-bordered member-list">
+    <thead>
+      <tr><td>Static member</td><td>Description</td></tr>
+    </thead>
+    <tbody>
       <tr>
         <td class="member-name">
 
-          <code onmouseout="hideTip(event, '23', 23)" onmouseover="showTip(event, '23', 23)">
-            Parse lines
+          <code onmouseout="hideTip(event, '53', 53)" onmouseover="showTip(event, '53', 53)">
+            DetectFromPath(path)
           </code>
-          <div class="tip" id="23">
-            <strong>Signature:</strong> lines:seq&lt;string&gt; -&gt; Package list<br />
+          <div class="tip" id="53">
+            <strong>Signature:</strong> path:string -&gt; FramworkCondition<br />
                       </div>
         </td>
         <td class="xmldoc">
-            <a href="http://github.com/fsprojects/Paket/tree/master/src/Paket/LockFile.fs#L33-33" class="github-link">
+            <a href="http://github.com/fsprojects/Paket/tree/master/src/Paket/ProjectFile.fs#L10-10" class="github-link">
               <img src="../content/img/github.png" class="normal" />
               <img src="../content/img/github-blue.png" class="hover" />
             </a>
-          <p>Parses a lockfile from lines</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td class="member-name">
-
-          <code onmouseout="hideTip(event, '24', 24)" onmouseover="showTip(event, '24', 24)">
-            Update (force, packageFile, lockFile)
-          </code>
-          <div class="tip" id="24">
-            <strong>Signature:</strong> (force:bool * packageFile:string * lockFile:string) -&gt; unit<br />
-                      </div>
-        </td>
-        <td class="xmldoc">
-            <a href="http://github.com/fsprojects/Paket/tree/master/src/Paket/LockFile.fs#L61-61" class="github-link">
-              <img src="../content/img/github.png" class="normal" />
-              <img src="../content/img/github-blue.png" class="hover" />
-            </a>
-          <p>Updates the lockfile with the analyzed dependencies from the packageFile.</p>
-
+          
         </td>
       </tr>
     </tbody>
