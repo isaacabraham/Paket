@@ -48,7 +48,10 @@
 
 <p>Future versions of Paket will also enable one to <a href="https://github.com/fsprojects/Paket/issues/9">reference files directly from git repositories</a>.</p>
 
-<h2>Resolving dependencies from NuGet is really slow</h2>
+<p><strong>Q:</strong> Why does Paket add references to the libraries of all the libraries framework versions in a NuGet package?</p>
+
+<p><strong>A:</strong> NuGet installs only for the currently matching .NET framework version of your project. Whenever you want to change the framework version you have to reinstall your NuGet packages. 
+Paket installs all of them; but it adds conditional attributes.</p>
 
 <p><strong>Q:</strong> When I resolve the dependencies from NuGet.org it is really slow. Why is that?</p>
 
