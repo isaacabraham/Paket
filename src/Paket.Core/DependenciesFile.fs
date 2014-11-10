@@ -8,6 +8,7 @@ open Paket.Requirements
 open Paket.ModuleResolver
 open Paket.PackageResolver
 open Paket.NugetSources
+open Paket.Refactor
 
 /// [omit]
 type InstallOptions = 
@@ -88,7 +89,7 @@ module DependenciesFileParser =
         |> List.rev
         |> List.toArray
 
-    let private (|Remote|Package|Blank|ReferencesMode|OmitContent|SourceFile|) (line:string) =
+    let private (|Remote|NugetPackage|Blank|ReferencesMode|OmitContent|GitHubItem|) (line:string) =
         match line.Trim() with
         | _ when String.IsNullOrWhiteSpace line -> Blank
         | trimmed when trimmed.StartsWith "source" -> Remote(NugetSource.Parse(trimmed))
@@ -101,57 +102,72 @@ module DependenciesFileParser =
                 | _ -> false
            
             match parts with
-            | name :: operator1 :: version1  :: operator2 :: version2 :: rest
-                when List.exists ((=) operator1) operators && List.exists ((=) operator2) operators -> Package(name,operator1 + " " + version1 + " " + operator2 + " " + version2 + " " + String.Join(" ",rest))
-            | name :: operator :: version  :: rest 
-                when List.exists ((=) operator) operators -> Package(name,operator + " " + version + " " + String.Join(" ",rest))
-            | name :: version :: rest when isVersion version -> 
-                Package(name,version + " " + String.Join(" ",rest))
-            | name :: rest -> Package(name,">= 0 " + String.Join(" ",rest))
-            | name :: [] -> Package(name,">= 0")
+            | name :: operator1 :: version1  :: operator2 :: version2 :: rest when List.exists ((=) operator1) operators && List.exists ((=) operator2) operators ->
+                NugetPackage(name,operator1 + " " + version1 + " " + operator2 + " " + version2 + " " + String.Join(" ",rest))
+            | name :: operator :: version  :: rest when List.exists ((=) operator) operators ->
+                NugetPackage(name,operator + " " + version + " " + String.Join(" ",rest))
+            | name :: version :: rest when isVersion version -> NugetPackage(name,version + " " + String.Join(" ",rest))
+            | name :: rest -> NugetPackage(name,">= 0 " + String.Join(" ",rest))
+            | name :: [] -> NugetPackage(name,">= 0")
             | _ -> failwithf "could not retrieve nuget package from %s" trimmed
         | trimmed when trimmed.StartsWith "references" -> ReferencesMode(trimmed.Replace("references","").Trim() = "strict")
         | trimmed when trimmed.StartsWith "content" -> OmitContent(trimmed.Replace("content","").Trim() = "none")
         | trimmed when trimmed.StartsWith "github" ->
-            let parts = parseDependencyLine trimmed
             let getParts (projectSpec:string) =
                 match projectSpec.Split [|':'; '/'|] with
                 | [| owner; project |] -> owner, project, None
                 | [| owner; project; commit |] -> owner, project, Some commit
                 | _ -> failwithf "invalid github specification:%s     %s" Environment.NewLine trimmed
-            match parts with
-            | [| _; projectSpec; fileSpec |] -> SourceFile(getParts projectSpec, fileSpec)
-            | [| _; projectSpec;  |] -> SourceFile(getParts projectSpec, GitHub.FullProjectSourceFileName)
+
+            match parseDependencyLine trimmed with
+            | [| _; projectSpec; fileSpec |] ->
+                let fileDetails =
+                    match fileSpec.Split ' ' with
+                    | [| file; "." |] -> file, ProjectRoot
+                    | [| file; customFolder |] -> file, CustomFolder customFolder
+                    | [| file |] -> file, PaketFiles 
+                    | _ -> failwithf "invalid github specification:%s     %s" Environment.NewLine trimmed
+                GitHubItem(getParts projectSpec, Some fileDetails)
+            | [| _; projectSpec;  |] ->
+                GitHubItem(getParts projectSpec, None)
             | _ -> failwithf "invalid github specification:%s     %s" Environment.NewLine trimmed
         | _ -> Blank
     
     let parseDependenciesFile fileName (lines:string seq) = 
-        ((0, InstallOptions.Default, [], [], []), lines)
-        ||> Seq.fold(fun (lineNo, options, sources: NugetSource list, packages, sourceFiles: UnresolvedSourceFile list) line ->
-            let lineNo = lineNo + 1
+        let start =
+            { Options =
+                { ContentRestrictions = Allowed; ProjectDependencyKind = Loose }
+              NugetSources = []
+              Dependencies = []
+            }
+        ((0, start), lines)
+        ||> Seq.fold(fun (lineNo, state) line ->
             try
-                match line with
-                | Remote(newSource) -> lineNo, options, sources @ [newSource], packages, sourceFiles
-                | Blank -> lineNo, options, sources, packages, sourceFiles
-                | ReferencesMode mode -> lineNo, { options with Strict = mode }, sources, packages, sourceFiles
-                | OmitContent omit -> lineNo, { options with OmitContent = omit }, sources, packages, sourceFiles
-                | Package(name,version) ->
-                    lineNo, options, sources, 
-                        { Sources = sources
-                          Name = name
-                          ResolverStrategy = parseResolverStrategy version
-                          Parent = DependenciesFile fileName
-                          VersionRequirement = parseVersionRequirement(version.Trim '!') } :: packages, sourceFiles
-                | SourceFile((owner,project, commit), path) ->
-                    lineNo, options, sources, packages, { Owner = owner; Project = project; Commit = commit; Name = path } :: sourceFiles
-                    
+                let state =
+                    match line with
+                    | Remote newSource -> { state with NugetSources = newSource :: state.NugetSources  }
+                    | Blank -> state
+                    | ReferencesMode mode -> { state with Options = { state.Options with ProjectDependencyKind = if mode then Strict else Loose } }
+                    | OmitContent omit -> { state with Options = { state.Options with ContentRestrictions = if omit then Ignored else Allowed } }
+                    | NugetPackage(name,version) ->
+                        let newPackage = Dependency.NuGet(PackageId name, Some(parseVersionRequirement(version.Trim '!')), parseResolverStrategy version) //TODO: Make proper option
+                        { state with Dependencies = newPackage :: state.Dependencies }
+                    | GitHubItem((owner, project, commit), fileSpec) ->
+                        let gitHubSource = { Owner = owner; Project = project; Commit = commit }
+                        let newGhItem =
+                            match fileSpec with
+                            | None -> Repository gitHubSource
+                            | Some (path, projectStructure) -> File(gitHubSource, path, projectStructure)
+                        { state with Dependencies = GitHub newGhItem :: state.Dependencies }
+                        
+                lineNo + 1,  state
             with
             | exn -> failwithf "Error in paket.dependencies line %d%s  %s" lineNo Environment.NewLine exn.Message)
-        |> fun (_,options,_,packages,remoteFiles) ->
+        |> fun (_, state) ->
             fileName,
-            options,
-            packages |> List.rev,
-            remoteFiles |> List.rev
+            { state with
+                NugetSources = state.NugetSources |> List.rev
+                Dependencies = state.Dependencies |> List.rev }
 
 module DependenciesFileSerializer = 
     let formatVersionRange strategy (version : VersionRequirement) : string =          
