@@ -77,6 +77,7 @@
     <Compile Include="Utils.fs" />
     <Compile Include="ConfigFile.fs" />
     <Compile Include="PackageSources.fs" />
+    <Compile Include="Domain.fs" />
     <Compile Include="Requirements.fs" />
     <Compile Include="ModuleResolver.fs" />
     <Compile Include="GitHub.fs" />

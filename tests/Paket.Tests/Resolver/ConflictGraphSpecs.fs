@@ -2,7 +2,7 @@
 
 open Paket
 open Paket.Requirements
-open Paket.PackageSources
+open Paket.NugetSources
 open Paket.PackageResolver
 open NUnit.Framework
 open FsUnit
@@ -27,7 +27,7 @@ let defaultPackage =
     { Name = ""
       Parent = PackageRequirementSource.DependenciesFile ""
       VersionRequirement = VersionRequirement(VersionRange.Exactly "1.0", PreReleaseStatus.No)
-      Sources = [ PackageSource.NugetSource "" ]
+      Sources = [ NugetSource.GetRemoteFeed "" ]
       ResolverStrategy = ResolverStrategy.Max }
 
 [<Test>]

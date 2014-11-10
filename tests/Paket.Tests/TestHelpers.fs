@@ -3,7 +3,7 @@
 open Paket
 open System
 open Paket.Requirements
-open Paket.PackageSources
+open Paket.NugetSources
 open PackageResolver
 open System.Xml
 open System.IO
@@ -32,7 +32,7 @@ let safeResolve graph (dependencies : (string * VersionRange) list)  =
         dependencies |> List.map (fun (n, v) -> 
                             { Name = n
                               VersionRequirement = VersionRequirement(v,PreReleaseStatus.No)
-                              Sources = [ PackageSource.NugetSource "" ]
+                              Sources = [ NugetSource.GetRemoteFeed "" ]
                               Parent = PackageRequirementSource.DependenciesFile ""
                               ResolverStrategy = ResolverStrategy.Max })
     PackageResolver.Resolve(VersionsFromGraph graph, PackageDetailsFromGraph graph, packages)

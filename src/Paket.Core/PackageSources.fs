@@ -1,4 +1,4 @@
-﻿module Paket.PackageSources
+﻿module Paket.NugetSources
 
 open System
 open System.Text.RegularExpressions
@@ -27,14 +27,11 @@ type NugetSourceAuthentication =
     | ConfigAuthentication of username : string * password : string
 
 let toBasicAuth = function
-    | PlainTextAuthentication(username,password) ->
-        {Username = username; Password = password}
-    | EnvVarAuthentication(usernameVar, passwordVar) -> 
-        {Username = usernameVar.Value; Password = passwordVar.Value}
-    | ConfigAuthentication(username, password) -> 
-        {Username = username; Password = password}
+    | PlainTextAuthentication(username,password) -> {Username = username; Password = password}
+    | EnvVarAuthentication(usernameVar, passwordVar) -> {Username = usernameVar.Value; Password = passwordVar.Value}
+    | ConfigAuthentication(username, password) -> {Username = username; Password = password}
 
-type NugetSource = 
+type RemoteNugetSource = 
     { Url : string
       Authentication : NugetSourceAuthentication option }
 
@@ -60,26 +57,26 @@ let private parseAuth(text, source) =
                             ConfigAuthentication(username, password))
 
 /// Represents the package source type.
-type PackageSource =
-| Nuget of NugetSource
-| LocalNuget of string
+type NugetSource =
+| RemoteFeed of RemoteNugetSource
+| LocalFeed of string
     override this.ToString() =
         match this with
-        | Nuget source -> source.Url
-        | LocalNuget path -> path
+        | RemoteFeed source -> source.Url
+        | LocalFeed path -> path
 
     static member Parse(line : string) =
         let parts = line.Split ' '
         let source = parts.[1].Replace("\"","").TrimEnd([| '/' |])
-        PackageSource.Parse(source, parseAuth(line, source))
+        NugetSource.Parse(source, parseAuth(line, source))
 
     static member Parse(source,auth) = 
         match System.Uri.TryCreate(source, System.UriKind.Absolute) with
-        | true, uri -> if uri.Scheme = System.Uri.UriSchemeFile then LocalNuget(source) else Nuget({ Url = source; Authentication = auth })
+        | true, uri -> if uri.Scheme = System.Uri.UriSchemeFile then LocalFeed(source) else RemoteFeed({ Url = source; Authentication = auth })
         | _ ->  match System.Uri.TryCreate(source, System.UriKind.Relative) with
-                | true, uri -> LocalNuget(source)
+                | true, uri -> LocalFeed(source)
                 | _ -> failwithf "unable to parse package source: %s" source
 
-    static member NugetSource url = Nuget { Url = url; Authentication = None }
+    static member GetRemoteFeed url = RemoteFeed { Url = url; Authentication = None }
 
-let DefaultNugetSource = PackageSource.NugetSource Constants.DefaultNugetStream
+let DefaultNugetSource = NugetSource.GetRemoteFeed Constants.DefaultNugetStream

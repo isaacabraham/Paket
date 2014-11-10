@@ -8,7 +8,7 @@ open System.Xml
 open Paket.Logging
 open Paket.Xml
 open Paket.Nuget
-open Paket.PackageSources
+open Paket.NugetSources
 
 type CredsMigrationMode =
     | Encrypt
@@ -185,10 +185,8 @@ let ConvertFromNuget(dependenciesFileName, force, installAfter, initAutoRestore,
     let migrateCredentials sourceName auth =
         let credsMigrationMode = defaultArg credsMigrationMode Encrypt
         match credsMigrationMode with
-        | Encrypt -> 
-            ConfigAuthentication(auth.Username, auth.Password)
-        | Plaintext -> 
-            PlainTextAuthentication(auth.Username, auth.Password)
+        | Encrypt -> ConfigAuthentication(auth.Username, auth.Password)
+        | Plaintext -> PlainTextAuthentication(auth.Username, auth.Password)
         | Selective -> 
             let question =
                 sprintf "Credentials for source '%s': " sourceName  + 
@@ -202,7 +200,7 @@ let ConvertFromNuget(dependenciesFileName, force, installAfter, initAutoRestore,
     let sources = 
         nugetConfig.PackageSources 
         |> List.map (fun (name,auth) -> 
-                        PackageSource.Parse(name, auth |> Option.map (migrateCredentials name)))
+                        NugetSource.Parse(name, auth |> Option.map (migrateCredentials name)))
 
     convertNugetsToDepFile(dependenciesFileName, nugetPackagesConfigs, sources)
         

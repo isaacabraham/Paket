@@ -5,7 +5,7 @@ open Paket
 open NUnit.Framework
 open FsUnit
 open Paket.NuGetConvert
-open PackageSources
+open NugetSources
 open System.Security.Cryptography
 open System.Text
 open System

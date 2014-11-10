@@ -6,7 +6,7 @@ open System.IO
 open Paket.Logging
 open Paket.PackageResolver
 open Paket.ModuleResolver
-open Paket.PackageSources
+open Paket.NugetSources
 
 module LockFileSerializer =
     /// [omit]
@@ -16,8 +16,8 @@ module LockFileSerializer =
             |> Seq.map (fun kv ->
                     let package = kv.Value
                     match package.Source with
-                    | Nuget source -> source.Url,source.Authentication,package
-                    | LocalNuget path -> path,None,package
+                    | RemoteFeed source -> source.Url,source.Authentication,package
+                    | LocalFeed path -> path,None,package
                 )
             |> Seq.groupBy (fun (a,b,_) -> a,b)
 
@@ -106,7 +106,7 @@ module LockFileParser =
                     let version = parts.[1] |> removeBrackets
                     { state with LastWasPackage = true
                                  Packages = 
-                                     { Source = PackageSource.Parse(remote, None)
+                                     { Source = NugetSource.Parse(remote, None)
                                        Name = parts.[0]
                                        Dependencies = Set.empty
                                        Unlisted = false

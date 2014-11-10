@@ -1,7 +1,7 @@
 module paket.dependenciesFile.ParserSpecs
 
 open Paket
-open Paket.PackageSources
+open Paket.NugetSources
 open NUnit.Framework
 open FsUnit
 open TestHelpers
@@ -63,9 +63,9 @@ nuget "MinPackage" "1.1.3"
 let ``should read simple config with comments``() = 
     let cfg = DependenciesFile.FromCode(config3)
     cfg.DirectDependencies.["Rx-Main"].Range |> shouldEqual (VersionRange.Between("2.2", "3.0"))
-    (cfg.Packages |> List.find (fun p -> p.Name = "Rx-Main")).Sources |> List.head |> shouldEqual PackageSources.DefaultNugetSource
+    (cfg.Packages |> List.find (fun p -> p.Name = "Rx-Main")).Sources |> List.head |> shouldEqual NugetSources.DefaultNugetSource
     cfg.DirectDependencies.["FAKE"].Range |> shouldEqual (VersionRange.Between("3.0", "4.0"))
-    (cfg.Packages |> List.find (fun p -> p.Name = "FAKE")).Sources |> List.head  |> shouldEqual PackageSources.DefaultNugetSource
+    (cfg.Packages |> List.find (fun p -> p.Name = "FAKE")).Sources |> List.head  |> shouldEqual NugetSources.DefaultNugetSource
 
 let config4 = """
 source "https://nuget.org/api/v2" // first source
@@ -81,9 +81,9 @@ let ``should read config with multiple sources``() =
     let cfg = DependenciesFile.FromCode(config4)
     cfg.Options.Strict |> shouldEqual false
 
-    (cfg.Packages |> List.find (fun p -> p.Name = "Rx-Main")).Sources |> shouldEqual [PackageSources.DefaultNugetSource; PackageSource.NugetSource "http://nuget.org/api/v3"]
-    (cfg.Packages |> List.find (fun p -> p.Name = "MinPackage")).Sources |> shouldEqual [PackageSources.DefaultNugetSource; PackageSource.NugetSource "http://nuget.org/api/v3"]
-    (cfg.Packages |> List.find (fun p -> p.Name = "FAKE")).Sources |> shouldEqual [PackageSources.DefaultNugetSource; PackageSource.NugetSource "http://nuget.org/api/v3"]
+    (cfg.Packages |> List.find (fun p -> p.Name = "Rx-Main")).Sources |> shouldEqual [NugetSources.DefaultNugetSource; NugetSource.GetRemoteFeed "http://nuget.org/api/v3"]
+    (cfg.Packages |> List.find (fun p -> p.Name = "MinPackage")).Sources |> shouldEqual [NugetSources.DefaultNugetSource; NugetSource.GetRemoteFeed "http://nuget.org/api/v3"]
+    (cfg.Packages |> List.find (fun p -> p.Name = "FAKE")).Sources |> shouldEqual [NugetSources.DefaultNugetSource; NugetSource.GetRemoteFeed "http://nuget.org/api/v3"]
 
 [<Test>]
 let ``should read source file from config``() =
@@ -113,7 +113,7 @@ let ``should read strict config``() =
     let cfg = DependenciesFile.FromCode(strictConfig)
     cfg.Options.Strict |> shouldEqual true
 
-    (cfg.Packages |> List.find (fun p -> p.Name = "FAKE")).Sources |> shouldEqual [PackageSource.NugetSource "http://nuget.org/api/v2"]
+    (cfg.Packages |> List.find (fun p -> p.Name = "FAKE")).Sources |> shouldEqual [NugetSource.GetRemoteFeed "http://nuget.org/api/v2"]
 
 let noneContentConfig = """
 content none
@@ -127,7 +127,7 @@ let ``should read content none config``() =
     let cfg = DependenciesFile.FromCode(noneContentConfig)
     cfg.Options.OmitContent |> shouldEqual true
 
-    (cfg.Packages |> List.find (fun p -> p.Name = "Microsoft.SqlServer.Types")).Sources |> shouldEqual [PackageSource.NugetSource "http://nuget.org/api/v2"]
+    (cfg.Packages |> List.find (fun p -> p.Name = "Microsoft.SqlServer.Types")).Sources |> shouldEqual [NugetSource.GetRemoteFeed "http://nuget.org/api/v2"]
 
 let configWithoutQuotes = """
 source http://nuget.org/api/v2
@@ -246,7 +246,7 @@ let ``should read config with encapsulated password source``() =
     
     (cfg.Packages |> List.find (fun p -> p.Name = "Rx-Main")).Sources 
     |> shouldEqual [ 
-        PackageSource.Nuget { 
+        NugetSource.RemoteFeed { 
             Url = "http://nuget.org/api/v2"
             Authentication = Some (PlainTextAuthentication("tatü tata", "you got hacked!")) } ]
 
@@ -276,7 +276,7 @@ let ``should read config with password in env variable``() =
     
     (cfg.Packages |> List.find (fun p -> p.Name = "Rx-Main")).Sources 
     |> shouldEqual [ 
-        PackageSource.Nuget { 
+        NugetSource.RemoteFeed { 
             Url = "http://nuget.org/api/v2"
             Authentication = Some (EnvVarAuthentication
                                     ({Variable = "%FEED_USERNAME%"; Value = "user XYZ"},

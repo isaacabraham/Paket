@@ -7,7 +7,7 @@ open Paket.Logging
 open Paket.Requirements
 open Paket.ModuleResolver
 open Paket.PackageResolver
-open Paket.PackageSources
+open Paket.NugetSources
 
 /// [omit]
 type InstallOptions = 
@@ -91,7 +91,7 @@ module DependenciesFileParser =
     let private (|Remote|Package|Blank|ReferencesMode|OmitContent|SourceFile|) (line:string) =
         match line.Trim() with
         | _ when String.IsNullOrWhiteSpace line -> Blank
-        | trimmed when trimmed.StartsWith "source" -> Remote(PackageSource.Parse(trimmed))
+        | trimmed when trimmed.StartsWith "source" -> Remote(NugetSource.Parse(trimmed))
         | trimmed when trimmed.StartsWith "nuget" -> 
             let parts = trimmed.Replace("nuget","").Trim().Replace("\"", "").Split([|' '|],StringSplitOptions.RemoveEmptyEntries) |> Seq.toList
 
@@ -127,7 +127,7 @@ module DependenciesFileParser =
     
     let parseDependenciesFile fileName (lines:string seq) = 
         ((0, InstallOptions.Default, [], [], []), lines)
-        ||> Seq.fold(fun (lineNo, options, sources: PackageSource list, packages, sourceFiles: UnresolvedSourceFile list) line ->
+        ||> Seq.fold(fun (lineNo, options, sources: NugetSource list, packages, sourceFiles: UnresolvedSourceFile list) line ->
             let lineNo = lineNo + 1
             try
                 match line with
@@ -180,7 +180,7 @@ module DependenciesFileSerializer =
         if text <> "" && preReleases <> "" then text + " " + preReleases else text + preReleases
 
 /// Allows to parse and analyze paket.dependencies files.
-type DependenciesFile(fileName,options,packages : PackageRequirement list, remoteFiles : UnresolvedSourceFile list) = 
+type DependenciesFile(fileName, options, packages : PackageRequirement list, remoteFiles : UnresolvedSourceFile list) = 
     let packages = packages |> Seq.toList
     let dependencyMap = Map.ofSeq (packages |> Seq.map (fun p -> p.Name, p.VersionRequirement))
     
@@ -229,7 +229,7 @@ type DependenciesFile(fileName,options,packages : PackageRequirement list, remot
         let sources = 
             match packages |> List.rev with
             | lastPackage::_ -> lastPackage.Sources
-            | [] -> [PackageSources.DefaultNugetSource]
+            | [] -> [NugetSources.DefaultNugetSource]
 
         let newPackage = 
             { Name = packageName
@@ -245,7 +245,7 @@ type DependenciesFile(fileName,options,packages : PackageRequirement list, remot
         let sources = 
             match packages |> List.rev with
             | lastPackage::_ -> lastPackage.Sources
-            | [] -> [PackageSources.DefaultNugetSource]
+            | [] -> [NugetSources.DefaultNugetSource]
 
         let strategy = 
             match packages |> List.tryFind (fun p -> p.Name.ToLower() = packageName.ToLower()) with
@@ -332,8 +332,8 @@ type DependenciesFile(fileName,options,packages : PackageRequirement list, remot
                   for source in sources do
                       hasReportedSource := true
                       match source with
-                      | Nuget source -> yield formatNugetSource source
-                      | LocalNuget source -> yield "source " + source
+                      | RemoteFeed source -> yield formatNugetSource source
+                      | LocalFeed source -> yield "source " + source
                   
                   for _,package in packages do
                       if (not !hasReportedFirst) && !hasReportedSource  then

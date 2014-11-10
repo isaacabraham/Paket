@@ -10,7 +10,7 @@ let toPackages =
         (fun (name, ver, deps) -> 
         { Name = name
           Version = SemVer.Parse ver
-          Source = PackageSources.DefaultNugetSource
+          Source = NugetSources.DefaultNugetSource
           Unlisted = false
           Dependencies = deps |> List.map (fun (name, verRan) -> name, NugetVersionRangeParser.parse verRan,None) |> Set.ofList } : PackageResolver.ResolvedPackage)
 

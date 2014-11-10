@@ -1,7 +1,7 @@
 ﻿module Paket.Requirements
 
 open Paket
-open Paket.PackageSources
+open Paket.NugetSources
 
 type PackageRequirementSource =
 | DependenciesFile of string
@@ -14,7 +14,7 @@ type PackageRequirement =
       VersionRequirement : VersionRequirement
       ResolverStrategy : ResolverStrategy
       Parent: PackageRequirementSource
-      Sources : PackageSource list }
+      Sources : NugetSource list }
 
     override this.Equals(that) = 
         match that with

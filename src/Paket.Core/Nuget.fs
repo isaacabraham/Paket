@@ -11,7 +11,7 @@ open System.Text.RegularExpressions
 open Paket.Logging
 open System.Text
 
-open Paket.PackageSources
+open Paket.NugetSources
 
 /// Represents type of NuGet packages.config file
 type NugetPackagesConfigType = ProjectLevel | SolutionLevel
@@ -374,7 +374,7 @@ let GetPackageDetails force sources package version : PackageResolver.PackageDet
         | source :: rest -> 
             try 
                 match source with
-                | Nuget source -> 
+                | RemoteFeed source -> 
                     getDetailsFromNuget 
                         force 
                         (source.Authentication |> Option.map toBasicAuth)
@@ -382,11 +382,10 @@ let GetPackageDetails force sources package version : PackageResolver.PackageDet
                         package 
                         version 
                     |> Async.RunSynchronously
-                | LocalNuget path -> 
-                    getDetailsFromLocalFile path package version |> Async.RunSynchronously
+                | LocalFeed path -> getDetailsFromLocalFile path package version |> Async.RunSynchronously
                 |> fun x -> source,x
             with _ -> tryNext rest
-        | [] -> failwithf "Couldn't get package details for package %s on %A." package (sources |> List.map (fun (s:PackageSource) -> s.ToString()))
+        | [] -> failwithf "Couldn't get package details for package %s on %A." package (sources |> List.map (fun (s:NugetSource) -> s.ToString()))
     
     let source,nugetObject = tryNext sources
     { Name = nugetObject.Name
@@ -400,11 +399,11 @@ let GetVersions(sources, packageName) =
     sources
     |> Seq.map (fun source -> 
            match source with
-           | Nuget source -> getAllVersions (
+           | RemoteFeed source -> getAllVersions (
                                 source.Authentication |> Option.map toBasicAuth, 
                                 source.Url, 
                                 packageName)
-           | LocalNuget path -> getAllVersionsFromLocalPath (path, packageName))
+           | LocalFeed path -> getAllVersionsFromLocalPath (path, packageName))
     |> Async.Parallel
     |> Async.RunSynchronously
     |> Seq.concat

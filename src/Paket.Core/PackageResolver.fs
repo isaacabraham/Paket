@@ -6,12 +6,12 @@ open Paket.Requirements
 open Paket.Logging
 open System.Collections.Generic
 open System
-open Paket.PackageSources
+open Paket.NugetSources
 
 /// Represents package details
 type PackageDetails =
     { Name : string
-      Source : PackageSource
+      Source : NugetSource
       DownloadLink : string
       Unlisted : bool
       DirectDependencies :  (string * VersionRequirement * (FrameworkIdentifier option)) Set }
@@ -22,7 +22,7 @@ type ResolvedPackage =
       Version : SemVerInfo
       Dependencies : (string * VersionRequirement * (FrameworkIdentifier option)) Set
       Unlisted : bool
-      Source : PackageSource }
+      Source : NugetSource }
 
     override this.ToString() = sprintf "%s %s" this.Name (this.Version.ToString())
 
