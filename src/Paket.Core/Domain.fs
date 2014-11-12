@@ -74,19 +74,15 @@ module private Sample =
               [ RemoteFeed { Url = "https://nuget.org/api/v2"
                              Authentication = None } ]
           Dependencies = 
-              [ NuGet(PackageId "Newtonsoft.Json", None)
-                NuGet(PackageId "UnionArgParser", None)
-                NuGet(PackageId "NUnit.Runners", Some <| VersionRequirement(VersionRange.AtLeast("2.6"), PreReleaseStatus.No))
-                NuGet(PackageId "NUnit", Some <| VersionRequirement(VersionRange.AtLeast("2.6"), PreReleaseStatus.No))
-                NuGet(PackageId "FAKE", None)
-                NuGet(PackageId "FSharp.Formatting", None)
-                NuGet(PackageId "DotNetZip", Some <| VersionRequirement(VersionRange.Between("1.9.3", "2.0.0"), PreReleaseStatus.No))
-                NuGet(PackageId "SourceLink.Fake", None)
-                NuGet(PackageId "NuGet.CommandLine", None)
-                NuGet(PackageId "FSharp.Core.Microsoft.Signed", None)
-                GitHub(File({ Owner = "forki"
-                              Project = "FsUnit"
-                              Commit = None }, "FsUnit.fs", PaketFiles))
-                GitHub(File({ Owner = "fsharp"
-                              Project = "FAKE"
-                              Commit = None }, "modules/Octokit/Octokit.fsx", PaketFiles)) ] }
+              [ NuGet(PackageId "Newtonsoft.Json", None, ResolverStrategy.Max)
+                NuGet(PackageId "UnionArgParser", None, ResolverStrategy.Max)
+                NuGet(PackageId "NUnit.Runners", Some <| VersionRequirement(VersionRange.AtLeast("2.6"), PreReleaseStatus.No), ResolverStrategy.Max)
+                NuGet(PackageId "NUnit", Some <| VersionRequirement(VersionRange.AtLeast("2.6"), PreReleaseStatus.No), ResolverStrategy.Max)
+                NuGet(PackageId "FAKE", None, ResolverStrategy.Max)
+                NuGet(PackageId "FSharp.Formatting", None, ResolverStrategy.Max)
+                NuGet(PackageId "DotNetZip", Some <| VersionRequirement(VersionRange.Between("1.9.3", "2.0.0"), PreReleaseStatus.No), ResolverStrategy.Max)
+                NuGet(PackageId "SourceLink.Fake", None, ResolverStrategy.Max)
+                NuGet(PackageId "NuGet.CommandLine", None, ResolverStrategy.Max)
+                NuGet(PackageId "FSharp.Core.Microsoft.Signed", None, ResolverStrategy.Max)                
+                GitHub(File({ Owner = "forki"; Project = "FsUnit"; Commit = None }, "FsUnit.fs", PaketFiles))
+                GitHub(File({ Owner = "fsharp"; Project = "FAKE"; Commit = None }, "modules/Octokit/Octokit.fsx", PaketFiles)) ] }

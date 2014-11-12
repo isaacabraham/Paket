@@ -13,3 +13,41 @@ nuget FSharp.Core.Microsoft.Signed
 
 github forki/FsUnit FsUnit.fs
 github fsharp/FAKE modules/Octokit/Octokit.fsx
+
+type GitHubSource =
+| File of Project : string * File * string
+| Repository of Project : string
+
+type SourceKind =
+| GitHub of GitHubSource
+| NuGet of Project : string * VersionRequirement option
+| Http of Uri : Uri
+
+type NugetSources = { Uri : Uri; AuthDetail : string }
+
+type Dependency =
+{
+	Name : string
+	Details : SourceKind
+}
+
+type ProjectReferencesKind =
+| Loose
+| Strict
+
+type ContentKind =
+| Allowed
+| Ignored
+
+type DependencySetOptions =
+{	
+	ContentRestrictions = None
+	ReferencesMode : ReferencesMode
+
+type DependencySet =
+{
+	NugetSources
+	Dependencies : Dependency list
+	Options : DependencySetOptions
+}
+
